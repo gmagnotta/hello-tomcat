@@ -1,0 +1,9 @@
+# Visual Studio Code
+.vscode
+
+# Maven
+target/
+
+# Other
+artifacts.tar
+.odo
