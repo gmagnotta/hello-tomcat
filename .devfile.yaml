@@ -1,13 +1,19 @@
 schemaVersion: 2.2.0
 metadata:
-  name: hello-jboss
-  version: 1.0.0
-  displayName: Hello Jboss
-  description: Hello Jboss
+  name: udi
+  displayName: Universal Developer Image
+  description: Universal Developer Image provides various programming languages tools and runtimes for instant coding
   icon: https://raw.githubusercontent.com/devfile/devfile-web/main/apps/landing-page/public/pwa-192x192.png
   tags:
     - Java
     - Maven
+    - Scala
+    - PHP
+    - .NET
+    - Node.js
+    - Go
+    - Python
+    - Pip
     - ubi8
   projectType: universal
   language: Polyglot
@@ -16,60 +22,8 @@ components:
   - name: tools
     container:
       image: quay.io/devfile/universal-developer-image:ubi8-latest
+      memoryLimit: 6G
+      memoryRequest: 512Mi
+      cpuRequest: 1000m
+      cpuLimit: 4000m
       mountSources: true
-      env:
-        - name: JAVA_HOME
-          value: '${JAVA_HOME_17}'
-      volumeMounts:
-        - name: deployments
-          path: /deployments
-        - name: m2
-          path: /tmp/m2
-  - name: jboss-webserver-6
-    container:
-      image: registry.redhat.io/jboss-webserver-6/jws60-openjdk17-openshift-rhel8@sha256:8ff2a1c968d3cca627e31e2cb9c336dafa651fe2d29cb64827f6cf6e877b6ab3
-      mountSources: true
-      endpoints:
-        - name: http
-          targetPort: 8080
-          protocol: https
-      env:
-        - name: AN_ENV_VARIABLE
-          value: 'THE_CONTENT'
-      volumeMounts:
-        - name: deployments
-          path: /deployments
-  - name: deployments
-    volume:
-      size: 1Gi
-  - name: m2
-    volume:
-      size: 1Gi
-commands:
-  - id: compile
-    exec:
-      component: tools
-      workingDir: ${PROJECT_SOURCE}
-      commandLine: 'mvn -Dmaven.repo.local=/tmp/m2 clean package'
-  - id: copyresources
-    exec:
-      component: tools
-      workingDir: ${PROJECT_SOURCE}
-      commandLine: 'cp $PROJECT_SOURCE/target/ROOT.war /deployments/'
-  - id: compileandcopy
-    composite:
-      commands:
-        - compile
-        - copyresources
-      parallel: false
-      group:
-        kind: build
-        isDefault: true
-  - id: run
-    exec:
-      component: jboss-webserver-6
-      workingDir: ${PROJECT_SOURCE}
-      commandLine: '/usr/local/s2i/run'
-      group:
-        kind: run
-        isDefault: true
