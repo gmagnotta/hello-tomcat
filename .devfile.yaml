@@ -2,6 +2,16 @@ schemaVersion: 2.2.0
 metadata:
   name: hello-jboss
   version: 1.0.0
+  displayName: Hello Jboss
+  description: Hello Jboss
+  icon: https://raw.githubusercontent.com/devfile/devfile-web/main/apps/landing-page/public/pwa-192x192.png
+  tags:
+    - Java
+    - Maven
+    - ubi8
+  projectType: universal
+  language: Polyglot
+  version: 1.0.0
 components:
   - name: tools
     container:
