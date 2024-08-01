@@ -10,8 +10,6 @@ components:
       env:
         - name: KUBEDOCK_ENABLED
           value: "true"
-        - name: KUBEDOCK_PARAMS
-          value: "--reverse-proxy --kubeconfig /home/user/.kube/config --initimage quay.io/agiertli/kubedock:0.13.0"
         - name: USE_JAVA17
           value: "true"
         - name: CONTAINER_HOST
@@ -26,63 +24,14 @@ components:
           name: kubedock
           protocol: tcp
           targetPort: 2475
-        # - exposure: public
-        #   name: http-booster
-        #   protocol: http
-        #   targetPort: 8080
-        #   attributes:
-        #     discoverable: true
-        #     urlRewriteSupported: true
+        - exposure: public
+          name: http-booster
+          protocol: http
+          targetPort: 8080
+          attributes:
+            discoverable: true
+            urlRewriteSupported: true
         - exposure: internal
           name: debug
           protocol: http
           targetPort: 5005
-  - name: jboss-webserver-6
-    container:
-      image: registry.redhat.io/jboss-webserver-6/jws60-openjdk17-openshift-rhel8
-      mountSources: true
-      endpoints:
-        - name: http
-          exposure: public
-          targetPort: 8080
-          protocol: http
-      env:
-        - name: AN_ENV_VARIABLE
-          value: 'THE_CONTENT'
-      volumeMounts:
-        - name: deployments
-          path: /deployments
-  - name: deployments
-    volume:
-      size: 1Gi
-  - name: m2
-    volume:
-      size: 1Gi
-commands:
-  - id: compile
-    exec:
-      component: tools
-      workingDir: ${PROJECT_SOURCE}
-      commandLine: 'mvn -Dmaven.repo.local=/tmp/m2 clean package'
-  - id: copyresources
-    exec:
-      component: tools
-      workingDir: ${PROJECT_SOURCE}
-      commandLine: 'cp $PROJECT_SOURCE/target/ROOT.war /deployments/'
-  - id: compileandcopy
-    composite:
-      commands:
-        - compile
-        - copyresources
-      parallel: false
-      group:
-        kind: build
-        isDefault: true
-  - id: run
-    exec:
-      component: jboss-webserver-6
-      workingDir: ${PROJECT_SOURCE}
-      commandLine: '/usr/local/s2i/run'
-      group:
-        kind: run
-        isDefault: true
