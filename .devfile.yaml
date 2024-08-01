@@ -35,3 +35,9 @@ components:
           name: debug
           protocol: http
           targetPort: 5005
+  - name: deployments
+    volume:
+      size: 1Gi
+  - name: m2
+    volume:
+      size: 1Gi
