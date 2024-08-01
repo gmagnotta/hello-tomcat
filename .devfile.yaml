@@ -5,11 +5,11 @@ metadata:
 components:
   - name: tools
     container:
-      image: registry.access.redhat.com/ubi9/openjdk-17:1.17-1.1705573248
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
       mountSources: true
       env:
-        - name: AN_ENV_VARIABLE
-          value: 'THE_CONTENT'
+        - name: JAVA_HOME
+          value: '${JAVA_HOME_17}'
       volumeMounts:
         - name: deployments
           path: /deployments
